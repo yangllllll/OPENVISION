@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import numpy as np
 
 from PySide6.QtCore import Qt, QPointF
@@ -9,7 +10,7 @@ from PySide6.QtGui import QAction, QKeySequence, QFont
 from PySide6.QtWidgets import (
     QMainWindow, QToolBar, QStatusBar,
     QDockWidget, QWidget, QVBoxLayout,
-    QSplitter, QMessageBox, QFileDialog,
+    QSplitter, QMessageBox, QFileDialog, QTabWidget,
 )
 
 from app.flowchart.canvas import FlowchartScene, FlowchartView
@@ -19,6 +20,7 @@ from app.panels.toolbox import ToolboxPanel
 from app.panels.properties import PropertiesPanel
 from app.panels.preview import PreviewPanel
 from app.panels.output import OutputPanel
+from app.panels.communication import CommunicationPanel
 from app.dialogs.line_finder_dialog import LineFinderDialog
 
 
@@ -181,11 +183,27 @@ class MainWindow(QMainWindow):
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         self._preview = PreviewPanel()
+
+        # 右侧：输出 + 通信 标签页
+        right_tabs = QTabWidget()
+        right_tabs.setStyleSheet("""
+            QTabWidget::pane { background: #1e1e1e; border: none; }
+            QTabBar::tab { background: #2d2d30; color: #aaa; padding: 5px 15px;
+                font-family: "Microsoft YaHei"; font-size: 11px; }
+            QTabBar::tab:selected { background: #1e1e1e; color: #fff; }
+        """)
         self._output = OutputPanel()
+        self._communication = CommunicationPanel()
+        right_tabs.addTab(self._output, "输出")
+        right_tabs.addTab(self._communication, "通信")
+
         splitter.addWidget(self._preview)
-        splitter.addWidget(self._output)
+        splitter.addWidget(right_tabs)
         splitter.setSizes([700, 300])
         bottom_layout.addWidget(splitter)
+
+        # 通信面板触发执行
+        self._communication.execute_requested.connect(self._on_comm_trigger)
 
         bottom_dock = QDockWidget("预览与输出", self)
         bottom_dock.setWidget(bottom_widget)
@@ -261,38 +279,7 @@ class MainWindow(QMainWindow):
     def _on_run(self):
         self._output.log_info("开始执行流程图...")
         self._act_run.setEnabled(False)
-
-        nodes = self._scene.get_nodes()
-        connections = self._scene.get_connections()
-
-        if not nodes:
-            self._output.log_warning("流程图为空，请先添加工具节点")
-            self._act_run.setEnabled(True)
-            return
-
-        self._engine.setup(nodes, connections)
-        results = self._engine.execute()
-
-        if "_error" in results:
-            self._output.log_error(results["_error"])
-        else:
-            self._output.log_success("流程图执行完成")
-            self._output.update_results(results)
-
-            # 查找最后一个有image输出的节点并在预览中显示
-            order = self._engine.topological_sort()
-            if order:
-                for node_id in reversed(order):
-                    node_results = self._engine.get_node_results(node_id)
-                    for port_name, value in node_results.items():
-                        if value is not None and hasattr(value, 'shape') and len(value.shape) >= 2:
-                            self._preview.set_image(value)
-                            self._output.log_info(f"预览: {nodes[node_id].plugin_name} -> {port_name}")
-                            break
-                    else:
-                        continue
-                    break
-
+        self._do_execute()
         self._act_run.setEnabled(True)
         self._statusbar.showMessage("执行完成")
 
@@ -332,6 +319,11 @@ class MainWindow(QMainWindow):
             self._preview.set_image(None)
             self._output._clear()
             self._current_file = filepath
+
+            # 恢复通信配置
+            if "communication" in data:
+                self._communication.set_config(data["communication"])
+
             self.setWindowTitle(f"OpenVision - {os.path.basename(filepath)}")
             self._output.log_success(f"已打开: {filepath}")
             self._statusbar.showMessage(f"已加载: {os.path.basename(filepath)}")
@@ -357,6 +349,7 @@ class MainWindow(QMainWindow):
     def _save_to_file(self, filepath: str):
         try:
             data = self._scene.to_dict()
+            data["communication"] = self._communication.get_config()
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
             self._current_file = filepath
@@ -380,3 +373,127 @@ class MainWindow(QMainWindow):
     def _on_refresh_plugins(self):
         self._toolbox.refresh()
         self._output.log_info("插件列表已刷新")
+
+    def _on_comm_trigger(self):
+        """通信面板触发检测"""
+        self._output.log_info("TCP通信触发检测...")
+        self._do_execute()
+
+    def _do_execute(self):
+        """执行流程图并生成通信响应"""
+        nodes = self._scene.get_nodes()
+        connections = self._scene.get_connections()
+
+        if not nodes:
+            self._output.log_warning("流程图为空，无法执行")
+            self._communication.set_response_data("ERROR:NO_NODES")
+            return
+
+        self._engine.setup(nodes, connections)
+        results = self._engine.execute()
+
+        # 构建状态字符串
+        order = self._engine.topological_sort()
+        status_parts = []
+        if order:
+            node_map = self._scene.get_nodes()
+            for nid in order:
+                if nid in node_map:
+                    status = "OK" if nid in results and not isinstance(results.get(nid), str) else "FAIL"
+                    status_parts.append(status)
+
+        delim = self._communication.get_delimiter()
+        status_str = delim.join(status_parts) if status_parts else "NO_RESULT"
+
+        # 构建输出内容
+        output_str = self._build_comm_response(nodes, results)
+
+        # 组合响应
+        if output_str:
+            response = f"{status_str}{delim}{output_str}"
+        else:
+            response = status_str
+
+        self._communication.set_response_data(response)
+        self._output.log_info(f"通信响应: {response[:200]}{'...' if len(response) > 200 else ''}")
+
+        if "_error" in results:
+            self._output.log_error(results["_error"])
+            return
+
+        # 预览图像
+        if order:
+            for node_id in reversed(order):
+                node_results = self._engine.get_node_results(node_id)
+                for port_name, value in node_results.items():
+                    if value is not None and hasattr(value, 'shape') and len(value.shape) >= 2:
+                        self._preview.set_image(value)
+                        break
+                else:
+                    continue
+                break
+
+        self._output.log_success("流程图执行完成")
+        self._output.update_results(results)
+
+    def _build_comm_response(self, nodes: dict, results: dict) -> str:
+        """根据通信面板的输出格式生成响应字符串"""
+        fmt = self._communication.get_output_format().strip()
+        if not fmt:
+            return ""
+
+        delim = self._communication.get_delimiter()
+        lines = [l.strip() for l in fmt.split("\n") if l.strip()]
+        output_parts = []
+
+        for line in lines:
+            try:
+                result = self._eval_format_line(line, nodes, results)
+                output_parts.append(str(result))
+            except Exception as e:
+                output_parts.append(f"ERR:{e}")
+
+        return delim.join(output_parts)
+
+    def _eval_format_line(self, line: str, nodes: dict, results: dict) -> str:
+        """解析一行格式字符串，替换 {node_id.port_name} 引用为实际值"""
+        # 先替换所有 {node_id.port_name} 引用
+        def replace_ref(match):
+            ref = match.group(1).strip()
+            parts = ref.split(".")
+            if len(parts) >= 2:
+                node_id = parts[0]
+                port_name = parts[1]
+                val = self._get_node_output_value(node_id, port_name, results)
+                return str(val)
+            return match.group(0)
+
+        # 替换 {xxx} 引用
+        line = re.sub(r'\{([^}]+)\}', replace_ref, line)
+
+        # 尝试安全求值（仅允许 + - * / 和数字）
+        try:
+            # 安全检查：只允许数字、空格、运算符、小数点
+            safe = re.sub(r'[\d\s+\-*/().]', '', line)
+            if safe == '':
+                val = eval(line)
+                if isinstance(val, float):
+                    return f"{val:.6f}".rstrip('0').rstrip('.')
+                return str(val)
+        except Exception:
+            pass
+
+        return line
+
+    def _get_node_output_value(self, node_id: str, port_name: str, results: dict) -> str:
+        """从执行结果中获取节点输出值"""
+        node_results = results.get(node_id, {})
+        if isinstance(node_results, dict):
+            val = node_results.get(port_name)
+            if val is not None:
+                if isinstance(val, (int, float)):
+                    return str(val)
+                elif isinstance(val, list):
+                    return str(len(val)) if len(val) > 0 else "0"
+                return str(val)
+        return "N/A"

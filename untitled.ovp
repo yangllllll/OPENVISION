@@ -14,8 +14,8 @@
     {
       "id": "2e7a881e",
       "plugin_id": "line_finder",
-      "x": -179.9544875,
-      "y": -77.53500000000003,
+      "x": -172.01948749999997,
+      "y": -130.43500000000003,
       "params": {
         "search_direction": "水平",
         "edge_polarity": "明到暗",
@@ -43,8 +43,8 @@
     {
       "id": "1c37dde2",
       "plugin_id": "line_finder",
-      "x": -168.92499999999993,
-      "y": 127.00249999999997,
+      "x": -179.50499999999994,
+      "y": 59.55500000000001,
       "params": {
         "search_direction": "垂直",
         "edge_polarity": "明到暗",
@@ -72,8 +72,8 @@
     {
       "id": "617c4a46",
       "plugin_id": "line_distance",
-      "x": 159.00750000000005,
-      "y": -30.57999999999999,
+      "x": 174.87750000000005,
+      "y": -41.15999999999999,
       "params": {
         "draw_color": "绿色",
         "line_thickness": 4,
@@ -84,8 +84,8 @@
     {
       "id": "01141290",
       "plugin_id": "user_number",
-      "x": 404.68499999999995,
-      "y": 67.44749999999996,
+      "x": 409.975,
+      "y": -132.25,
       "params": {
         "compare_mode": "小于",
         "NUM": 30.1
@@ -130,5 +130,12 @@
       "target_node": "01141290",
       "target_port": "input"
     }
-  ]
+  ],
+  "communication": {
+    "port": 2520,
+    "control_word": "TRIGGER",
+    "output_format": "{01141290.output}",
+    "delimiter": ";",
+    "custom_delimiter": ";"
+  }
 }
