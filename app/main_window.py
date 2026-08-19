@@ -21,7 +21,6 @@ from app.panels.properties import PropertiesPanel
 from app.panels.preview import PreviewPanel
 from app.panels.output import OutputPanel
 from app.panels.communication import CommunicationPanel
-from app.dialogs.line_finder_dialog import LineFinderDialog
 
 
 class MainWindow(QMainWindow):
@@ -237,21 +236,17 @@ class MainWindow(QMainWindow):
         node.on_double_clicked = self._on_node_double_clicked
 
     def _on_node_double_clicked(self, node: NodeItem):
-        """双击节点：打开专用编辑对话框"""
-        if node.plugin_id == "line_finder":
-            self._open_line_finder_dialog(node)
-        else:
+        """双击节点：打开专用编辑对话框（由插件自己声明）"""
+        dialog_cls = node.plugin.get_dialog_class()
+        if dialog_cls is None:
             self._output.log_info(f"节点 [{node.plugin_name}] 没有专用编辑界面")
+            return
 
-    def _open_line_finder_dialog(self, node: NodeItem):
-        """打开线查找对话框"""
-        # 获取输入图像：执行上游节点
         input_image = self._get_input_image_for_node(node)
-
-        dialog = LineFinderDialog(node.plugin, input_image, self)
-        if dialog.exec() == LineFinderDialog.DialogCode.Accepted:
-            self._output.log_info(f"线查找ROI已更新: {len(node.plugin.get_rois())} 个ROI区域")
-            self._statusbar.showMessage("线查找参数已保存")
+        dialog = dialog_cls(node.plugin, input_image, self)
+        if dialog.exec() == dialog.DialogCode.Accepted:
+            self._output.log_info(f"节点 [{node.plugin_name}] 编辑完成")
+            self._statusbar.showMessage(f"{node.plugin_name} 参数已保存")
 
     def _get_input_image_for_node(self, node: NodeItem) -> np.ndarray | None:
         """获取节点的输入图像（执行上游节点）"""

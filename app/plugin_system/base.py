@@ -117,3 +117,10 @@ class PluginBase(ABC):
     def set_extra_data(self, data: Dict[str, Any]):
         """恢复插件特有数据（用于保存/加载）。子类重写以反序列化自定义数据。"""
         pass
+
+    def get_dialog_class(self):
+        """返回插件专用对话框类（用于双击节点打开编辑界面）。
+        返回 None 表示没有专用对话框。
+        子类重写返回 QDialog 子类，构造函数签名为 (plugin, input_image, parent)。
+        """
+        return None

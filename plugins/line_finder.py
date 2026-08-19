@@ -302,3 +302,7 @@ class LineFinderPlugin(PluginBase):
 
     def get_last_error(self) -> str:
         return getattr(self, '_last_error', '')
+
+    def get_dialog_class(self):
+        from app.dialogs.line_finder_dialog import LineFinderDialog
+        return LineFinderDialog
