@@ -1,0 +1,134 @@
+{
+  "version": "1.0",
+  "nodes": [
+    {
+      "id": "575d5ec4",
+      "plugin_id": "image_source",
+      "x": -549.6146249999999,
+      "y": 13.305368749999994,
+      "params": {
+        "file_path": "E:/11/7af0638b5744f28046852a843d4ec950.png"
+      },
+      "extra": {}
+    },
+    {
+      "id": "2e7a881e",
+      "plugin_id": "line_finder",
+      "x": -179.9544875,
+      "y": -77.53500000000003,
+      "params": {
+        "search_direction": "水平",
+        "edge_polarity": "明到暗",
+        "edge_threshold1": 19,
+        "edge_threshold2": 77,
+        "hough_threshold": 34,
+        "min_line_length": 30,
+        "max_line_gap": 15,
+        "blur_ksize": 9,
+        "learn_mode": false,
+        "draw_color": "绿色",
+        "line_thickness": 2
+      },
+      "extra": {
+        "rois": [
+          [
+            246,
+            318,
+            99,
+            239
+          ]
+        ]
+      }
+    },
+    {
+      "id": "1c37dde2",
+      "plugin_id": "line_finder",
+      "x": -168.92499999999993,
+      "y": 127.00249999999997,
+      "params": {
+        "search_direction": "垂直",
+        "edge_polarity": "明到暗",
+        "edge_threshold1": 13,
+        "edge_threshold2": 63,
+        "hough_threshold": 30,
+        "min_line_length": 30,
+        "max_line_gap": 15,
+        "blur_ksize": 3,
+        "learn_mode": false,
+        "draw_color": "绿色",
+        "line_thickness": 2
+      },
+      "extra": {
+        "rois": [
+          [
+            228,
+            744,
+            75,
+            97
+          ]
+        ]
+      }
+    },
+    {
+      "id": "617c4a46",
+      "plugin_id": "line_distance",
+      "x": 159.00750000000005,
+      "y": -30.57999999999999,
+      "params": {
+        "draw_color": "绿色",
+        "line_thickness": 4,
+        "font_scale": 0.6
+      },
+      "extra": {}
+    },
+    {
+      "id": "01141290",
+      "plugin_id": "user_number",
+      "x": 404.68499999999995,
+      "y": 67.44749999999996,
+      "params": {
+        "compare_mode": "小于",
+        "NUM": 30.1
+      },
+      "extra": {}
+    }
+  ],
+  "connections": [
+    {
+      "source_node": "575d5ec4",
+      "source_port": "output",
+      "target_node": "2e7a881e",
+      "target_port": "input"
+    },
+    {
+      "source_node": "575d5ec4",
+      "source_port": "output",
+      "target_node": "1c37dde2",
+      "target_port": "input"
+    },
+    {
+      "source_node": "2e7a881e",
+      "source_port": "line_coords",
+      "target_node": "617c4a46",
+      "target_port": "lines1"
+    },
+    {
+      "source_node": "1c37dde2",
+      "source_port": "line_coords",
+      "target_node": "617c4a46",
+      "target_port": "lines2"
+    },
+    {
+      "source_node": "575d5ec4",
+      "source_port": "output",
+      "target_node": "617c4a46",
+      "target_port": "image"
+    },
+    {
+      "source_node": "617c4a46",
+      "source_port": "horizontal_dist",
+      "target_node": "01141290",
+      "target_port": "input"
+    }
+  ]
+}
