@@ -14,8 +14,8 @@
     {
       "id": "2e7a881e",
       "plugin_id": "line_finder",
-      "x": -165.53198749999996,
-      "y": -139.88500000000005,
+      "x": -188.53198749999996,
+      "y": -124.88500000000005,
       "params": {
         "search_direction": "水平",
         "edge_polarity": "明到暗",
@@ -44,7 +44,7 @@
       "id": "1c37dde2",
       "plugin_id": "line_finder",
       "x": -194.40499999999986,
-      "y": 27.135000000000005,
+      "y": 60.135000000000005,
       "params": {
         "search_direction": "垂直",
         "edge_polarity": "明到暗",
@@ -72,8 +72,8 @@
     {
       "id": "617c4a46",
       "plugin_id": "line_distance",
-      "x": 50.562500000000085,
-      "y": -10.7425,
+      "x": 58.562500000000085,
+      "y": -14.7425,
       "params": {
         "draw_color": "绿色",
         "line_thickness": 4,
@@ -84,8 +84,8 @@
     {
       "id": "01141290",
       "plugin_id": "user_number",
-      "x": 409.975,
-      "y": -132.25,
+      "x": 295.975,
+      "y": 33.75,
       "params": {
         "compare_mode": "小于",
         "NUM": 30.1

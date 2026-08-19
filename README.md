@@ -4,7 +4,7 @@
 
 **[English](#) | 简体中文**
 
-**开源免费 · 无授权限制 · 流程图式视觉检测 · 插件扩展 · TCP通信**
+**免费使用 · AGPL-3.0 · 流程图式视觉检测 · 插件扩展 · TCP通信**
 
 ---
 
@@ -23,14 +23,14 @@
 
 ## 项目简介
 
-OpenVision 是一款**开源免费**的工业视觉检测软件，仿 VisionMaster 界面设计，基于 PySide6 + OpenCV 构建。支持流程图式拖拽编程、插件扩展、TCP 远程通信，适用于自动化产线上的视觉定位、测量、检测等场景。
+OpenVision 是一款**免费使用**的工业视觉检测软件，仿 VisionMaster 界面设计，基于 PySide6 + OpenCV 构建。支持流程图式拖拽编程、插件扩展、TCP 远程通信，适用于自动化产线上的视觉定位、测量、检测等场景。
 
 ### 为什么选择 OpenVision？
 
 | 对比项 | OpenVision | Halcon / VisionPro | VisionMaster |
 |--------|-----------|-------------------|--------------|
 | 费用 | **完全免费** | 数万元/年授权 | 需硬件绑定 |
-| 开源 | **MIT 协议** | 闭源 | 闭源 |
+| 开源 | **AGPL-3.0** | 闭源 | 闭源 |
 | 插件扩展 | **Python脚本即插件** | 需要 SDK | 受限 |
 | 通信 | **内置 TCP Socket** | 需额外开发 | 需额外开发 |
 | 流程图 | **拖拽式** | 有 | 有 |
@@ -294,27 +294,16 @@ OPENVISION/
 
 ### 开源协议
 
-本项目基于 **MIT 协议** 开源，可自由使用、修改、分发，无需授权。
+本项目基于 **GNU AGPL-3.0** 协议开源。简单来说：
 
-```
-MIT License
+- 你可以自由使用、修改、分发
+- 但**修改后的代码也必须以 AGPL-3.0 开源**
+- 通过网络提供服务也必须公开源码
+- 这能有效阻止他人将你的代码闭源后商业售卖
 
-Copyright (c) 2026 郑州德塔工业自动化责任有限公司 杨佳祺
+详见 [LICENSE](LICENSE) 文件。
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-```
+> 如需商业闭源授权或技术支持，请联系：杨佳祺 / 15803820398 / yangjiaqi@datekj.top
 
 </div>
 

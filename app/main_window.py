@@ -398,7 +398,7 @@ class MainWindow(QMainWindow):
             node_map = self._scene.get_nodes()
             for nid in order:
                 if nid in node_map:
-                    status = "OK" if nid in results and not isinstance(results.get(nid), str) else "FAIL"
+                    status = "OK" if nid in results and not isinstance(results.get(nid), str) else "NG"
                     status_parts.append(status)
 
         delim = self._communication.get_delimiter()

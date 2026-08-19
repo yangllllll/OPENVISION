@@ -135,7 +135,7 @@ class number_plugin(PluginBase):
 
     plugin_id = "user_number"
     plugin_name = "比较"
-    plugin_category = "用户插件"
+    plugin_category = "数学运算"
     plugin_description = "对数字进行比较"
 
     @classmethod
