@@ -307,13 +307,13 @@ class MainWindow(QMainWindow):
             self._preview.set_image(None)
             self._output._clear()
             self._current_file = None
-            self.setWindowTitle("OpenVision - 工业视觉检测平台")
+            self.setWindowTitle("DateVision - 工业视觉检测平台")
             self._statusbar.showMessage("新建流程图")
 
     def _on_open(self):
         filepath, _ = QFileDialog.getOpenFileName(
             self, "打开项目", "",
-            "OpenVision 项目文件 (*.ovp);;JSON 文件 (*.json);;所有文件 (*.*)"
+            "DateVision 项目文件 (*.dvp);;JSON 文件 (*.json);;所有文件 (*.*)"
         )
         if not filepath:
             return
@@ -331,7 +331,7 @@ class MainWindow(QMainWindow):
             if "communication" in data:
                 self._communication.set_config(data["communication"])
 
-            self.setWindowTitle(f"OpenVision - {os.path.basename(filepath)}")
+            self.setWindowTitle(f"DateVision - {os.path.basename(filepath)}")
             self._output.log_success(f"已打开: {filepath}")
             self._statusbar.showMessage(f"已加载: {os.path.basename(filepath)}")
         except Exception as e:
@@ -360,7 +360,7 @@ class MainWindow(QMainWindow):
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
             self._current_file = filepath
-            self.setWindowTitle(f"OpenVision - {os.path.basename(filepath)}")
+            self.setWindowTitle(f"DateVision - {os.path.basename(filepath)}")
             self._output.log_success(f"已保存: {filepath}")
             self._statusbar.showMessage(f"已保存: {os.path.basename(filepath)}")
         except Exception as e:

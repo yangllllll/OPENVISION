@@ -4,10 +4,10 @@
     {
       "id": "图像源_1",
       "plugin_id": "image_source",
-      "x": -898.129906640625,
+      "x": -896.1185494531248,
       "y": -108.27207601562499,
       "params": {
-        "file_path": "E:/11/7af0638b5744f28046852a843d4ec950.png"
+        "file_path": "E:/11/42c5e4e2ab724af68ba9eafdecfb21ea.png"
       },
       "extra": {}
     },
@@ -77,15 +77,15 @@
       "params": {
         "draw_color": "绿色",
         "line_thickness": 2,
-        "font_scale": 0.6
+        "font_scale": 1.0
       },
       "extra": {}
     },
     {
       "id": "比较_1",
       "plugin_id": "user_number",
-      "x": 389.0149026465028,
-      "y": -59.2926096408318,
+      "x": 323.4649026465028,
+      "y": -63.89260964083181,
       "params": {
         "compare_mode": "小于",
         "NUM": 50.0
@@ -179,6 +179,20 @@
         "NUM": 0
       },
       "extra": {}
+    },
+    {
+      "id": "图像流推送_1",
+      "plugin_id": "websocket_server",
+      "x": 326.12525000000005,
+      "y": -232.81312499999999,
+      "params": {
+        "port": 9000,
+        "quality": 80,
+        "auto_start": true
+      },
+      "extra": {
+        "running": true
+      }
     }
   ],
   "connections": [
@@ -252,6 +266,12 @@
       "source_node": "线查找_2",
       "source_port": "output",
       "target_node": "线间距_1",
+      "target_port": "input"
+    },
+    {
+      "source_node": "线间距_1",
+      "source_port": "output",
+      "target_node": "图像流推送_1",
       "target_port": "input"
     }
   ],
