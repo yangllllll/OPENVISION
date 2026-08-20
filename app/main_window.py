@@ -346,8 +346,8 @@ class MainWindow(QMainWindow):
 
     def _on_save_as(self):
         filepath, _ = QFileDialog.getSaveFileName(
-            self, "保存项目", "untitled.ovp",
-            "OpenVision 项目文件 (*.ovp);;JSON 文件 (*.json);;所有文件 (*.*)"
+            self, "保存项目", "untitled.dvp",
+            "DateVision 项目文件 (*.dvp);;JSON 文件 (*.json);;所有文件 (*.*)"
         )
         if not filepath:
             return

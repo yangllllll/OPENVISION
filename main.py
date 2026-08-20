@@ -1,4 +1,4 @@
-"""OpenVision - 工业视觉检测平台入口"""
+"""DateVision - 工业视觉检测平台入口"""
 
 import sys
 import os
@@ -15,8 +15,8 @@ from app.main_window import MainWindow
 
 def main():
     app = QApplication(sys.argv)
-    app.setApplicationName("OpenVision")
-    app.setOrganizationName("OpenVision")
+    app.setApplicationName("DateVision")
+    app.setOrganizationName("DateVision")
 
     # 设置默认字体
     font = QFont("Microsoft YaHei", 9)
