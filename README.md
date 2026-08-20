@@ -262,11 +262,6 @@ OPENVISION/
 
 ### 开源不易，如果 OpenVision 帮助到了你，欢迎支持！
 
-<p>
-<img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=A+clean+minimalist+QR+code+illustration+for+donation+with+Chinese+text+赞赏码+in+modern+flat+design+style+on+white+background&image_size=square_hd" width="200" alt="赞赏码"/>
-</p>
-
-**微信赞赏码**
 
 ---
 
@@ -277,7 +272,7 @@ OPENVISION/
 - **开发者**：杨佳祺
 - **电话**：15803820398
 - **邮箱**：yangjiaqi@datekj.top
-- **公司**：郑州德塔工业自动化责任有限公司
+- **公司**：郑州德塔工业自动化
 
 ---
 
