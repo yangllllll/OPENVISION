@@ -4,7 +4,7 @@ from __future__ import annotations
 import time
 from typing import Callable, Optional
 
-from PySide6.QtCore import Qt, QRectF
+from PySide6.QtCore import Qt, QRectF, QPointF
 from PySide6.QtGui import (
     QPainter, QColor, QPen, QFont,
     QPainterPath,
@@ -43,6 +43,7 @@ class NodeItem(QGraphicsItem):
         self._port_spacing = 4
 
         self._last_click_time = 0.0
+        self._status: Optional[bool] = None  # None=未执行, True=OK, False=NG
 
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
@@ -76,6 +77,11 @@ class NodeItem(QGraphicsItem):
         for i, port in enumerate(self.output_ports):
             y = self._header_height + self._port_spacing + i * self._port_row_height + self._port_row_height / 2
             port.setPos(self._width, y)
+
+    def set_status(self, ok: Optional[bool]):
+        """设置执行状态指示灯: None=未执行, True=绿点, False=红点"""
+        self._status = ok
+        self.update()
 
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._width, self._height)
@@ -125,9 +131,19 @@ class NodeItem(QGraphicsItem):
         # 标题文字
         painter.setPen(QColor(255, 255, 255))
         painter.setFont(QFont("Microsoft YaHei", 9, QFont.Weight.Bold))
-        name = self.plugin_name[:12]
-        painter.drawText(QRectF(6, 0, self._width - 12, self._header_height),
+        name = self.node_id[:12]
+        painter.drawText(QRectF(6, 0, self._width - 24, self._header_height),
                         Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, name)
+
+        # 状态指示灯（右上角）
+        if self._status is not None:
+            r = 5
+            cx = self._width - 14
+            cy = self._header_height / 2
+            dot_color = QColor(76, 175, 80) if self._status else QColor(244, 67, 54)
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(dot_color)
+            painter.drawEllipse(QPointF(cx, cy), r, r)
 
         # 输入/输出标签和端口
         font = QFont("Microsoft YaHei", 8)
