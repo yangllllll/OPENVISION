@@ -250,23 +250,35 @@ class MainWindow(QMainWindow):
 
     def _get_input_image_for_node(self, node: NodeItem) -> np.ndarray | None:
         """获取节点的输入图像（执行上游节点）"""
-        # 查找连接到该节点输入端口的源节点
         connections = self._scene.get_connections()
+        executed = set()
+
+        def _execute_upstream(n: NodeItem):
+            """递归执行上游节点，传递所有端口数据"""
+            if n.node_id in executed:
+                return
+            n.plugin.reset()
+            for conn in connections:
+                if conn.target_port and conn.target_port.parent_node is n:
+                    src = conn.source_port.parent_node
+                    _execute_upstream(src)
+                    src_outputs = src.plugin.get_outputs()
+                    tgt_port = conn.target_port.port_name
+                    src_port = conn.source_port.port_name
+                    if src_port in src_outputs:
+                        n.plugin.set_input(tgt_port, src_outputs[src_port])
+            n.plugin.execute()
+            executed.add(n.node_id)
+
         for conn in connections:
             if conn.target_port and conn.target_port.parent_node is node:
                 src_node = conn.source_port.parent_node
-                # 执行源节点
                 try:
-                    src_node.plugin.reset()
-                    # 递归获取源节点的输入
-                    src_input = self._get_input_image_for_node(src_node)
-                    if src_input is not None:
-                        src_node.plugin.set_input("input", src_input)
-                    if src_node.plugin.execute():
-                        outputs = src_node.plugin.get_outputs()
-                        for name, val in outputs.items():
-                            if isinstance(val, np.ndarray) and len(val.shape) >= 2:
-                                return val
+                    _execute_upstream(src_node)
+                    outputs = src_node.plugin.get_outputs()
+                    for name, val in outputs.items():
+                        if isinstance(val, np.ndarray) and len(val.shape) >= 2:
+                            return val
                 except Exception:
                     pass
         return None

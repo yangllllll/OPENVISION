@@ -309,6 +309,10 @@ class FlowchartScene(QGraphicsScene):
                 self._connections.append(conn)
                 self.addItem(conn)
 
+        # 加载完成后刷新所有连线路径
+        for conn in self._connections:
+            conn.update_path()
+
         self.connection_changed.emit()
 
 

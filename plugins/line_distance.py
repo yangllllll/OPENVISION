@@ -22,7 +22,7 @@ class LineDistancePlugin(PluginBase):
         return [
             PortDef("lines1", PortType.ANY, "线坐标集合1"),
             PortDef("lines2", PortType.ANY, "线坐标集合2"),
-            PortDef("image", PortType.IMAGE, "参考图像(可选)"),
+            PortDef("input", PortType.IMAGE, "参考图像(可选)"),
         ]
 
     @classmethod
@@ -48,7 +48,7 @@ class LineDistancePlugin(PluginBase):
     def execute(self) -> bool:
         lines1 = self._inputs.get("lines1")
         lines2 = self._inputs.get("lines2")
-        image = self._inputs.get("image")
+        image = self._inputs.get("input")
 
         if lines1 is None or lines2 is None:
             self._last_error = "缺少线坐标输入，请连接两个线查找工具的输出"
@@ -60,6 +60,11 @@ class LineDistancePlugin(PluginBase):
 
         if len(lines1) == 0 or len(lines2) == 0:
             self._last_error = "线坐标为空，请先运行线查找工具"
+            self._outputs["output"] = image
+            self._outputs["horizontal_dist"] = 0
+            self._outputs["vertical_dist"] = 0
+            self._outputs["all_distances"] = self._distances
+            self._outputs["pair_count"] = 0
             return False
 
         try:

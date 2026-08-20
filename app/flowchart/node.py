@@ -69,6 +69,14 @@ class NodeItem(QGraphicsItem):
         max_ports = max(len(self.input_ports), len(self.output_ports), 1)
         self._height = self._header_height + max_ports * self._port_row_height + self._port_spacing * 2
 
+        # 设置端口位置（在初始化时确定，不依赖 paint 延迟调用）
+        for i, port in enumerate(self.input_ports):
+            y = self._header_height + self._port_spacing + i * self._port_row_height + self._port_row_height / 2
+            port.setPos(0, y)
+        for i, port in enumerate(self.output_ports):
+            y = self._header_height + self._port_spacing + i * self._port_row_height + self._port_row_height / 2
+            port.setPos(self._width, y)
+
     def boundingRect(self) -> QRectF:
         return QRectF(0, 0, self._width, self._height)
 
@@ -127,14 +135,12 @@ class NodeItem(QGraphicsItem):
 
         for i, port in enumerate(self.input_ports):
             y = self._header_height + self._port_spacing + i * self._port_row_height + self._port_row_height / 2
-            port.setPos(0, y)
             painter.setPen(QColor(200, 200, 200))
             painter.drawText(QRectF(14, y - 9, self._width / 2 - 18, 18),
                            Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, port.port_name)
 
         for i, port in enumerate(self.output_ports):
             y = self._header_height + self._port_spacing + i * self._port_row_height + self._port_row_height / 2
-            port.setPos(self._width, y)
             painter.setPen(QColor(200, 200, 200))
             painter.drawText(QRectF(self._width / 2 + 4, y - 9, self._width / 2 - 18, 18),
                            Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight, port.port_name)

@@ -104,12 +104,11 @@ class ExecutionEngine:
                     err = node.plugin.get_last_error() or "执行失败"
                     self._results[node_id] = err
                     errors.append(f"{node.plugin_name}: {err}")
-                    # 失败节点清空输出，防止向下游传递无效数据
-                    node.plugin.reset()
+
             except Exception as e:
                 self._results[node_id] = str(e)
                 errors.append(f"{node.plugin_name}: {e}")
-                node.plugin.reset()
+               
 
         if errors:
             self._results["_error"] = "; ".join(errors)
