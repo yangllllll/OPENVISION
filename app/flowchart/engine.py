@@ -92,21 +92,27 @@ class ExecutionEngine:
             node = self._nodes[node_id]
             node.plugin.reset()
 
+        errors = []
         for node_id in order:
             node = self._nodes[node_id]
             self._transfer_data()
             try:
                 success = node.plugin.execute()
-                if not success:
-                    self._results["_error"] = f"节点 [{node.plugin_name}] 执行失败"
-                    self._running = False
-                    return self._results
+                if success:
+                    self._results[node_id] = node.plugin.get_outputs()
+                else:
+                    err = node.plugin.get_last_error() or "执行失败"
+                    self._results[node_id] = err
+                    errors.append(f"{node.plugin_name}: {err}")
+                    # 失败节点清空输出，防止向下游传递无效数据
+                    node.plugin.reset()
             except Exception as e:
-                self._results["_error"] = f"节点 [{node.plugin_name}] 异常: {str(e)}"
-                self._running = False
-                return self._results
+                self._results[node_id] = str(e)
+                errors.append(f"{node.plugin_name}: {e}")
+                node.plugin.reset()
 
-            self._results[node_id] = node.plugin.get_outputs()
+        if errors:
+            self._results["_error"] = "; ".join(errors)
 
         self._running = False
         return self._results

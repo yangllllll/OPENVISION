@@ -1,7 +1,6 @@
 """流程图画布 - QGraphicsScene + QGraphicsView"""
 
 from __future__ import annotations
-import uuid
 from typing import Optional
 
 from PySide6.QtCore import Qt, QPointF, Signal
@@ -35,6 +34,7 @@ class FlowchartScene(QGraphicsScene):
         self._temp_connection: Optional[ConnectionItem] = None
         self._connections: list[ConnectionItem] = []
         self._nodes: dict[str, NodeItem] = {}
+        self._node_counter: dict[str, int] = {}
 
         self.setSceneRect(-5000, -5000, 10000, 10000)
         self.setBackgroundBrush(QColor(30, 30, 32))
@@ -58,7 +58,11 @@ class FlowchartScene(QGraphicsScene):
 
     def add_plugin_node(self, plugin_id: str, pos: QPointF = QPointF(0, 0)) -> Optional[NodeItem]:
         """添加一个插件节点到画布"""
-        node_id = str(uuid.uuid4())[:8]
+        manager = PluginManager()
+        pc = manager._plugin_classes.get(plugin_id)
+        plugin_name = pc.plugin_name if pc else plugin_id
+        self._node_counter[plugin_name] = self._node_counter.get(plugin_name, 0) + 1
+        node_id = f"{plugin_name}_{self._node_counter[plugin_name]}"
         return self._add_node(plugin_id, node_id, pos)
 
     def _add_node(self, plugin_id: str, node_id: str, pos: QPointF) -> Optional[NodeItem]:
@@ -216,6 +220,7 @@ class FlowchartScene(QGraphicsScene):
         for node_id in list(self._nodes.keys()):
             self.remove_node(node_id)
         self._nodes.clear()
+        self._node_counter.clear()
 
     def to_dict(self) -> dict:
         """序列化整个流程图"""
@@ -268,6 +273,16 @@ class FlowchartScene(QGraphicsScene):
             extra = nd.get("extra", {})
             if extra:
                 node.plugin.set_extra_data(extra)
+
+            # 同步计数器：解析 node_id 中的序号
+            nid = nd["id"]
+            if "_" in nid:
+                try:
+                    name_part, num_part = nid.rsplit("_", 1)
+                    num = int(num_part)
+                    self._node_counter[name_part] = max(self._node_counter.get(name_part, 0), num)
+                except ValueError:
+                    pass
 
         # 加载连接
         for cd in data.get("connections", []):

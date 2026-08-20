@@ -1,5 +1,6 @@
 """模板匹配插件 - 支持ROI框选训练模板，缓存到tmp目录"""
 
+import base64
 import os
 import traceback
 
@@ -69,10 +70,10 @@ class PatternMatchPlugin(PluginBase):
         self._template_roi = (rx, ry, rw, rh)
         self._template_image = template_gray
 
-        # 缓存到 tmp 目录
+        # 缓存到 tmp 目录（用实例 id 区分，避免多节点冲突）
         tmp_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tmp")
         os.makedirs(tmp_dir, exist_ok=True)
-        cache_path = os.path.join(tmp_dir, f"template_{self.plugin_id}.png")
+        cache_path = os.path.join(tmp_dir, f"template_{self.plugin_id}_{id(self)}.png")
         cv2.imwrite(cache_path, template_gray)
         self._template_cache_path = cache_path
 
@@ -91,18 +92,23 @@ class PatternMatchPlugin(PluginBase):
         data = {}
         if self._template_roi:
             data["template_roi"] = list(self._template_roi)
-        if self._template_cache_path:
-            data["template_cache_path"] = self._template_cache_path
+        # 将模板图像编码为 base64 存入项目文件，避免多节点缓存冲突
+        if self._template_image is not None:
+            _, buf = cv2.imencode(".png", self._template_image)
+            data["template_base64"] = base64.b64encode(buf).decode("ascii")
         return data
 
     def set_extra_data(self, data: dict):
         if "template_roi" in data and isinstance(data["template_roi"], list) and len(data["template_roi"]) == 4:
             self._template_roi = tuple(data["template_roi"])
-        if "template_cache_path" in data:
-            self._template_cache_path = data["template_cache_path"]
-            # 尝试从缓存恢复模板图像
-            if os.path.exists(self._template_cache_path):
-                self._template_image = cv2.imread(self._template_cache_path, cv2.IMREAD_GRAYSCALE)
+        # 优先从 base64 恢复模板图像
+        if "template_base64" in data:
+            try:
+                buf = base64.b64decode(data["template_base64"])
+                arr = np.frombuffer(buf, np.uint8)
+                self._template_image = cv2.imdecode(arr, cv2.IMREAD_GRAYSCALE)
+            except Exception:
+                pass
 
     def get_dialog_class(self):
         from app.dialogs.pattern_match_dialog import PatternMatchDialog
@@ -132,7 +138,8 @@ class PatternMatchPlugin(PluginBase):
                 self._outputs["output"] = img if len(img.shape) == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
                 self._outputs["match_count"] = 0
                 self._outputs["match_positions"] = []
-                return True
+                self._last_error = "模板尺寸大于输入图像"
+                return False
 
             color_map = {
                 "绿色": (0, 255, 0), "红色": (0, 0, 255), "蓝色": (255, 0, 0),
@@ -196,6 +203,11 @@ class PatternMatchPlugin(PluginBase):
             self._outputs["output"] = output
             self._outputs["match_count"] = match_count
             self._outputs["match_positions"] = positions
+
+            if match_count == 0:
+                self._last_error = "未匹配到任何目标"
+                return False
+
             return True
         except Exception as e:
             self._last_error = f"{type(e).__name__}: {e}\n{traceback.format_exc()}"

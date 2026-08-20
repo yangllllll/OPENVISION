@@ -418,12 +418,13 @@ class MainWindow(QMainWindow):
 
         if "_error" in results:
             self._output.log_error(results["_error"])
-            return
 
-        # 预览图像
+        # 预览图像（成功的节点照常显示）
         if order:
             for node_id in reversed(order):
                 node_results = self._engine.get_node_results(node_id)
+                if isinstance(node_results, str):
+                    continue
                 for port_name, value in node_results.items():
                     if value is not None and hasattr(value, 'shape') and len(value.shape) >= 2:
                         self._preview.set_image(value)
