@@ -144,7 +144,7 @@ class number_plugin(PluginBase):
 
     @classmethod
     def output_ports(cls):
-        return [PortDef("output", PortType.ANY, "比较结果")]
+        return [PortDef("output", PortType.BOOL, "比较结果")]
 
     @classmethod
     def input_params(cls):

@@ -32,13 +32,14 @@ class PortItem(QGraphicsItem):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         type_colors = {
-            "image": QColor(0, 180, 0),
-            "region": QColor(0, 120, 200),
-            "number": QColor(200, 120, 0),
-            "string": QColor(150, 50, 200),
-            "point": QColor(0, 160, 160),
-            "matrix": QColor(160, 0, 100),
-            "any": QColor(128, 128, 128),
+            "image": QColor(0, 200, 80),
+            "region": QColor(0, 140, 255),
+            "number": QColor(255, 160, 0),
+            "bool": QColor(200, 60, 200),
+            "string": QColor(255, 220, 0),
+            "point": QColor(0, 200, 200),
+            "matrix": QColor(255, 60, 60),
+            "any": QColor(160, 160, 160),
         }
 
         color = type_colors.get(self.port_type, QColor(128, 128, 128))
