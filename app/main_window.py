@@ -372,14 +372,14 @@ class MainWindow(QMainWindow):
 
     def _on_about(self):
         QMessageBox.about(self, "关于 OpenVision",
-                          "<h3>OpenVision 工业视觉检测平台 v1.0</h3>"
+                          "<h3>OpenVision 工业视觉检测平台 v1.20.0.1</h3>"
                           "<p>基于 PySide6 + OpenCV 构建</p>"
                           "<p>开源免费，无授权限制</p>"
                           "<hr>"
                           "<p><b>开发者：</b>杨佳祺</p>"
                           "<p><b>联系电话：</b>15803820398</p>"
                           "<p><b>联系邮箱：</b>yangjiaqi@datekj.top</p>"
-                          "<p><b>版权所有：</b>郑州德塔工业自动化责任有限公司</p>")
+                          "<p><b>版权所有：</b>郑州德塔工业自动化</p>")
 
     def _on_refresh_plugins(self):
         self._toolbox.refresh()
