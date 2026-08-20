@@ -1,4 +1,4 @@
-# OpenVision 工业视觉检测平台
+# DateVision 工业视觉检测平台
 
 <div align="center">
 
@@ -23,11 +23,11 @@
 
 ## 项目简介
 
-OpenVision 是一款**免费使用**的工业视觉检测软件，仿 VisionMaster 界面设计，基于 PySide6 + OpenCV 构建。支持流程图式拖拽编程、插件扩展、TCP 远程通信，适用于自动化产线上的视觉定位、测量、检测等场景。
+DateVision 是一款**免费使用**的工业视觉检测软件，基于 PySide6 + OpenCV 构建。支持流程图式拖拽编程、插件扩展、TCP 远程通信，适用于自动化产线上的视觉定位、测量、检测等场景。
 
-### 为什么选择 OpenVision？
+### 为什么选择 DateVision？
 
-| 对比项 | OpenVision | Halcon / VisionPro | VisionMaster |
+| 对比项 | DateVision | Halcon / VisionPro | VisionMaster |
 |--------|-----------|-------------------|--------------|
 | 费用 | **完全免费** | 数万元/年授权 | 需硬件绑定 |
 | 开源 | **AGPL-3.0** | 闭源 | 闭源 |
@@ -167,7 +167,7 @@ class MyPlugin(PluginBase):
 ## 项目结构
 
 ```
-OPENVISION/
+DATEVISION/
 ├── main.py                     # 入口文件
 ├── run.bat                     # 一键启动脚本
 ├── requirements.txt            # 依赖清单
@@ -260,7 +260,7 @@ OPENVISION/
 
 <div align="center">
 
-### 开源不易，如果 OpenVision 帮助到了你，欢迎支持！
+### 开源不易，如果 DateVision 帮助到了你，欢迎支持！
 
 
 ---

@@ -1,4 +1,4 @@
-"""主窗口 - VisionMaster风格界面"""
+
 
 import json
 import os
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("OpenVision - 工业视觉检测平台")
+        self.setWindowTitle("DateVision - 工业视觉检测平台")
         self.resize(1400, 900)
         self.setMinimumSize(1024, 600)
 
@@ -371,8 +371,8 @@ class MainWindow(QMainWindow):
         self._view.fitInView(self._scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
 
     def _on_about(self):
-        QMessageBox.about(self, "关于 OpenVision",
-                          "<h3>OpenVision 工业视觉检测平台 v1.20.0.1</h3>"
+        QMessageBox.about(self, "关于 DateVision",
+                          "<h3>DateVision 工业视觉检测平台 v1.20.0.1</h3>"
                           "<p>基于 PySide6 + OpenCV 构建</p>"
                           "<p>开源免费，无授权限制</p>"
                           "<hr>"
