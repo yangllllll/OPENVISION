@@ -91,7 +91,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=None,
+    icon=r'E:\11\OPENVISION\logo\logo.ico',
 )
 
 coll = COLLECT(
