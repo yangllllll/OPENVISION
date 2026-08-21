@@ -1,0 +1,106 @@
+# -*- mode: python ; coding: utf-8 -*-
+"""PyInstaller spec for DateVision"""
+
+import os
+from PyInstaller.utils.hooks import collect_submodules
+
+project_root = r'E:\11\OPENVISION'
+
+a = Analysis(
+    [os.path.join(project_root, 'main.py')],
+    pathex=[project_root],
+    binaries=[],
+    datas=[
+        (os.path.join(project_root, 'app'), 'app'),
+        (os.path.join(project_root, 'plugins'), 'plugins'),
+    ],
+    hiddenimports=[
+        'app.plugin_system',
+        'app.plugin_system.base',
+        'app.plugin_system.manager',
+        'app.flowchart',
+        'app.flowchart.node',
+        'app.flowchart.port',
+        'app.flowchart.connection',
+        'app.flowchart.canvas',
+        'app.flowchart.engine',
+        'app.panels',
+        'app.panels.toolbox',
+        'app.panels.properties',
+        'app.panels.output',
+        'app.panels.communication',
+        'app.panels.preview',
+        'app.dialogs',
+        'app.dialogs.line_finder_dialog',
+        'app.dialogs.pattern_match_dialog',
+        'plugins',
+        'plugins.image_source',
+        'plugins.line_finder',
+        'plugins.line_distance',
+        'plugins.morphology',
+        'plugins.threshold',
+        'plugins.edge_detection',
+        'plugins.pattern_match',
+        'plugins.blob_analysis',
+        'plugins.color_extract',
+        'plugins.calibration',
+        'cv2',
+        'numpy',
+        'PIL',
+        'PIL.Image',
+        'PIL.ImageFile',
+        'PIL.ImageDraw',
+        'PIL.ImageFont',
+        'PIL.ImageFilter',
+        'PIL.ImageEnhance',
+        'PIL.ImageOps',
+        'PIL.ImageStat',
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[
+        'tkinter',
+        'unittest',
+        'test',
+        'pytest',
+        'setuptools',
+        'pip',
+    ],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    [],
+    exclude_binaries=True,
+    name='DateVision',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon=None,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='DateVision',
+)
